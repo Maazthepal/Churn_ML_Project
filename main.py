@@ -1,3 +1,4 @@
+from src.Churn_Predictor.pipeline.model_evaluation_pipeline import ModelEvaluationPipeline
 from src.Churn_Predictor.pipeline.data_ingestion_pipeline import DataIngestionPipeline
 from src.Churn_Predictor.pipeline.data_validation_pipeline import DataValidationPipeline
 from src.Churn_Predictor.pipeline.data_transformation_pipeline import DataTransformationPipeline
@@ -42,6 +43,16 @@ try:
    model_trainer = ModelTrainerPipeline()
    model_trainer.initiate_model_trainer()
    logger.info(f">>>>>> stage: {STAGE_NAME} completed <<<<<<\n\nx==========x")
+except Exception as e:
+        logger.exception(e)
+        raise e
+
+STAGE_NAME = "Model Evaluation Stage"
+try:
+    logger.info(f">>>>>> stage: {STAGE_NAME} started <<<<<<") 
+    model_evaluation_pipeline = ModelEvaluationPipeline()
+    model_evaluation_pipeline.initiate_model_evaluation()
+    logger.info(f">>>>>> stage: {STAGE_NAME} completed <<<<<<\n\nx==========x")
 except Exception as e:
         logger.exception(e)
         raise e
