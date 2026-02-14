@@ -1,0 +1,28 @@
+artifacts_root: artifacts
+
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  dataset_slug: blastchar/telco-customer-churn
+  local_data_file: artifacts/data_ingestion/data.zip
+  unzip_dir: artifacts/data_ingestion/raw_data
+
+data_validation:
+  root_dir: artifacts/data_validation
+  unzipped_data_dir: artifacts/data_ingestion/raw_data/WA_Fn-UseC_-Telco-Customer-Churn.csv
+  STATUS_FILE: artifacts/data_validation/status.txt
+
+data_transformation:
+  root_dir: artifacts/data_transformation
+  data_path: artifacts/data_ingestion/raw_data/WA_Fn-UseC_-Telco-Customer-Churn.csv
+
+model_trainer:
+  root_dir: artifacts/model_trainer
+  model_name: model.joblib
+  train_data_path: artifacts/data_transformation/train.csv
+  test_data_path: artifacts/data_transformation/test.csv
+
+model_evaluation:
+  root_dir: artifacts/model_evaluation
+  test_data_path: artifacts/data_transformation/test.csv
+  model_path: artifacts/model_trainer/model.joblib
+  metric_file_name: artifacts/model_evaluation/metric.json

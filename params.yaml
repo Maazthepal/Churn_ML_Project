@@ -1,0 +1,8 @@
+XGBBoost:
+  n_estimators: 100
+  max_depth: 3
+  learning_rate: 0.05
+  scale_pos_weight: 2.0
+  subsample: 0.8
+  colsample_bytree: 0.8
+  random_state: 42
