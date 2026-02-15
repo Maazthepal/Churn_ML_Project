@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 700px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .result-card.churn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .result-card.no-churn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .result-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .probability-bar {
+            background: rgba(255,255,255,0.3);
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Prediction Result</h1>
+        
+        <div class="result-card {% if result.prediction == 1 %}churn{% else %}no-churn{% endif %}">
+            <div class="result-title">
+                {% if result.prediction == 1 %}
+                    ⚠️ HIGH RISK
+                {% else %}
+                    ✅ LOW RISK
+                {% endif %}
+            </div>
+            <h2>{{ result.churn }}</h2>
+            
+            <div class="probability-bar">
+    <div class="probability-fill" 
+         style="width: {{ result.churn_probability | float | round(1) }}%; 
+                background: {% if result.prediction == 1 %}#f5576c{% else %}#00f2fe{% endif %};">
+        {{ "%.1f"|format(result.churn_probability) }}%
+    </div>
+</div>
+            
+            <p style="font-size: 1.2em; margin-top: 15px;">{{ result.risk_level }}</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Churn Probability</div>
+                <div class="stat-value">{{ "%.1f"|format(result.churn_probability) }}%</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Stay Probability</div>
+                <div class="stat-value">{{ "%.1f"|format(result.no_churn_probability) }}%</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Confidence</div>
+                <div class="stat-value">{{ "%.1f"|format(result.confidence) }}%</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Tenure</div>
+                <div class="stat-value">{{ form_data.tenure }} mo</div>
+            </div>
+        </div>
+        
+        <a href="/" class="back-btn" style="margin-top: 30px;">🔙 Make Another Prediction</a>
+    </div>
+</body>
+</html>
