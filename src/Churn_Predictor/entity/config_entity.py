@@ -27,7 +27,7 @@ class ModelTunerConfig:
     train_data_path: Path
     test_data_path: Path
     target_column: str
-    n_trails: int
+    n_trials: int
     study_name: str
     best_params_path: Path
     mlflow_uri: str     

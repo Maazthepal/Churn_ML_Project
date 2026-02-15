@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-RUN_HYPERPARAMETER_TUNING = False
+RUN_HYPERPARAMETER_TUNING = True
 
 STAGE_NAME = "Data Ingestion Stage"
 try:
@@ -46,23 +46,23 @@ if RUN_HYPERPARAMETER_TUNING:
     STAGE_NAME = "Model Hyperparameter Tuning Stage"
     try:
         logger.info(f">>>>>>> {STAGE_NAME} started <<<<<<<")
-        logger.info("⚠️  Running hyperparameter tuning with Optuna...")
-        logger.info("⏳ This will take 30-60 minutes for 100 trials...")
+        logger.info(" Running hyperparameter tuning with Optuna...")
+        logger.info("This will take 30-60 minutes for 100 trials...")
         
         model_tuner = ModelTunerPipeline()
-        best_params, best_score = model_tuner.initiate_tuning()
+        best_params, best_score = model_tuner.initiate_model_tuning()
         
-        logger.info(f"✅ Best validation F1 score: {best_score:.4f}")
-        logger.info(f"📁 Best parameters saved to: artifacts/model_tuner/best_params.yaml")
-        logger.info(f"💡 Copy these params to params.yaml for production use")
+        logger.info(f"Best validation F1 score: {best_score:.4f}")
+        logger.info(f"Best parameters saved to: artifacts/model_tuner/best_params.yaml")
+        logger.info(f"Copy these params to params.yaml for production use")
         logger.info(f">>>>>>> {STAGE_NAME} completed <<<<<<<\nx==========x\n")
     except Exception as e:
         logger.exception(e)
-        logger.warning("⚠️  Tuning failed! Continuing with default params from params.yaml")
+        logger.warning("Tuning failed! Continuing with default params from params.yaml")
 else:
-    logger.info("⏭️  Skipping Hyperparameter Tuning")
-    logger.info("   Using parameters from params.yaml")
-    logger.info("   (Set RUN_HYPERPARAMETER_TUNING=True to enable tuning)\n")
+    logger.info("Skipping Hyperparameter Tuning")
+    logger.info("Using parameters from params.yaml")
+    logger.info("(Set RUN_HYPERPARAMETER_TUNING=True to enable tuning)\n")
 
 STAGE_NAME = "Model Trainer stage"
 try:

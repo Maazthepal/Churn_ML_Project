@@ -19,7 +19,7 @@ model_tuner:
   root_dir: artifacts/model_tuner
   test_data_path: artifacts/data_transformation/test.csv
   train_data_path: artifacts/data_transformation/train.csv
-  n_trails: 100
+  n_trials: 1
   study_name: churn_prediction_optuna
   best_params_path: artifacts/model_tuner/best_params.yaml
 

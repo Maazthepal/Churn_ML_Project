@@ -67,7 +67,7 @@ class ConfigurationManager:
             train_data_path=config.train_data_path,
             test_data_path=config.test_data_path,
             target_column=target_column,
-            n_trails=config.n_trails,
+            n_trials=config.n_trials,
             study_name=config.study_name,
             best_params_path=config.best_params_path,
             mlflow_uri=os.getenv('MLFLOW_TRACKING_URI', 'file:./mlruns')  

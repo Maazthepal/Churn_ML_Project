@@ -10,7 +10,6 @@ from sklearn.metrics import f1_score
 from dotenv import load_dotenv
 from src.Churn_Predictor import logger
 from src.Churn_Predictor.entity.config_entity import ModelTunerConfig
-import plotly
 
 load_dotenv()
 
@@ -110,12 +109,12 @@ class ModelTuner:
         )
         
         # Run optimization
-        logger.info(f"Starting optimization with {self.config.n_trails} trials...")
+        logger.info(f"Starting optimization with {self.config.n_trials} trials...")  # ✅ Fixed typo
         logger.info("This may take a while...")
         
         study.optimize(
             lambda trial: self.objective(trial, X_train, y_train, X_val, y_val),
-            n_trials=self.config.n_trails,
+            n_trials=self.config.n_trials,  # ✅ Fixed typo
             callbacks=[mlflc],
             show_progress_bar=True
         )
@@ -139,7 +138,7 @@ class ModelTuner:
         
         # Generate optimization visualizations
         self._generate_visualizations(study)
-        
+
         return best_params, best_score
     
     def _save_best_params(self, best_params):
@@ -169,7 +168,7 @@ class ModelTuner:
         logger.info("You can now copy these to params.yaml to use them in training!")
     
     def _generate_visualizations(self, study):
-        """Generate Optuna visualization plots"""
+        """Generate Optuna visualization plots and log to MLflow"""
         try:
             from optuna.visualization import (
                 plot_optimization_history,
@@ -180,20 +179,87 @@ class ModelTuner:
             # Create visualizations directory
             viz_dir = os.path.join(self.config.root_dir, 'visualizations')
             os.makedirs(viz_dir, exist_ok=True)
+    
+            logger.info("Generating visualization plots...")
+            artifact_paths = []
             
-            # 1. Optimization history
-            fig1 = plot_optimization_history(study)
-            fig1.write_html(os.path.join(viz_dir, 'optimization_history.html'))
-            
-            # 2. Parameter importances
-            fig2 = plot_param_importances(study)
-            fig2.write_html(os.path.join(viz_dir, 'param_importances.html'))
-            
-            # 3. Slice plot
-            fig3 = plot_slice(study)
-            fig3.write_html(os.path.join(viz_dir, 'param_slice.html'))
-            
+            # 1. Optimization history (always works with 1+ trials)
+            try:
+                fig1 = plot_optimization_history(study)
+                history_path = os.path.join(viz_dir, 'optimization_history.html')
+                fig1.write_html(history_path)
+                artifact_paths.append(history_path)
+                logger.info("Created: optimization_history.html")
+            except Exception as e:
+                logger.warning(f"Could not create optimization history: {e}")
+    
+            # 2. Parameter importances (needs 2+ trials)
+            if len(study.trials) >= 2:
+                try:
+                    fig2 = plot_param_importances(study)
+                    importance_path = os.path.join(viz_dir, 'param_importances.html')
+                    fig2.write_html(importance_path)
+                    artifact_paths.append(importance_path)
+                    logger.info("Created: param_importances.html")
+                except Exception as e:
+                    logger.warning(f"Could not create param importances: {e}")
+            else:
+                logger.warning("Skipping param importances plot (requires 2+ trials)")
+    
+            # 3. Slice plot (needs 2+ trials)
+            if len(study.trials) >= 2:
+                try:
+                    fig3 = plot_slice(study)
+                    slice_path = os.path.join(viz_dir, 'param_slice.html')
+                    fig3.write_html(slice_path)
+                    artifact_paths.append(slice_path)
+                    logger.info("Created: param_slice.html")
+                except Exception as e:
+                    logger.warning(f"Could not create slice plot: {e}")
+            else:
+                logger.warning("Skipping slice plot (requires 2+ trials)")
+    
             logger.info(f"Visualizations saved to: {viz_dir}")
-            
+    
+            # Log to MLflow if we have any artifacts
+            if artifact_paths:
+                try:
+                    # End any active runs first
+                    try:
+                        while mlflow.active_run():
+                            mlflow.end_run()
+                    except:
+                        pass
+                    
+                    # Start a dedicated run for best results + visualizations
+                    logger.info("Creating MLflow run for visualizations...")
+                    with mlflow.start_run(run_name=f"Best_Results_Trial_{study.best_trial.number}"):
+                        
+                        # Log best parameters
+                        mlflow.log_params(study.best_params)
+                        
+                        # Log best metrics
+                        mlflow.log_metric("best_f1_score", study.best_value)
+                        mlflow.log_metric("best_trial_number", study.best_trial.number)
+                        mlflow.log_metric("total_trials", len(study.trials))
+                        
+                        # Log visualization artifacts
+                        logger.info("Logging visualizations to MLflow...")
+                        for i, artifact_path in enumerate(artifact_paths, 1):
+                            mlflow.log_artifact(artifact_path, "visualizations")
+                            logger.info(f"  [{i}/{len(artifact_paths)}] Logged: {os.path.basename(artifact_path)}")
+                        
+                        logger.info("Visualizations logged to MLflow successfully!")
+                    
+                    logger.info("All MLflow runs finalized")
+                    
+                except Exception as mlflow_error:
+                    logger.warning(f"Could not log to MLflow: {mlflow_error}")
+                    logger.info("Visualizations are saved locally in artifacts/model_tuner/visualizations/")
+            else:
+                logger.warning("No visualizations to log to MLflow")
+        
         except Exception as e:
             logger.warning(f"Could not generate visualizations: {e}")
+            import traceback
+            logger.warning(traceback.format_exc())

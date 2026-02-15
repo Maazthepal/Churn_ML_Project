@@ -1,0 +1,12 @@
+XGBBoost:
+  colsample_bytree: 0.662397808134481
+  gamma: 0.4330880728874676
+  learning_rate: 0.03574712922600244
+  max_depth: 10
+  min_child_weight: 1
+  n_estimators: 233
+  random_state: 42
+  reg_alpha: 0.6011150117432088
+  reg_lambda: 0.7080725777960455
+  scale_pos_weight: 3.3946339367881464
+  subsample: 0.6624074561769746
