@@ -25,7 +25,11 @@ class ModelTrainer:
             scale_pos_weight=self.config.scale_pos_weight,
             subsample=self.config.subsample,
             colsample_bytree=self.config.colsample_bytree,
-            random_state=self.config.random_state
+            random_state=self.config.random_state,
+            min_child_weight=self.config.min_child_weight,
+            gamma=self.config.gamma,
+            reg_alpha=self.config.reg_alpha,
+            reg_lambda=self.config.reg_lambda
         )
         xgb.fit(X_train, y_train)
         logger.info("Model training completed.")

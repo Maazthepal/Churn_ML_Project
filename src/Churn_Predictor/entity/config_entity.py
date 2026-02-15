@@ -20,9 +20,17 @@ class DataValidationConfig:
 class DataTransformationConfig:
     root_dir: Path
     data_path: Path
-
-from dataclasses import dataclass
-from pathlib import Path
+    
+@dataclass(frozen=True)
+class ModelTunerConfig:
+    root_dir: Path
+    train_data_path: Path
+    test_data_path: Path
+    target_column: str
+    n_trails: int
+    study_name: str
+    best_params_path: Path
+    mlflow_uri: str     
 
 @dataclass(frozen=True)
 class ModelTrainerConfig:
@@ -38,6 +46,10 @@ class ModelTrainerConfig:
     subsample: float
     colsample_bytree: float
     random_state: int
+    reg_lambda: float
+    reg_alpha: float
+    gamma: float
+    min_child_weight: int
 
 @dataclass 
 class ModelEvaluationConfig:

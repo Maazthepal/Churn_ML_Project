@@ -1,8 +1,12 @@
 XGBBoost:
-  n_estimators: 100
-  max_depth: 3
-  learning_rate: 0.05
-  scale_pos_weight: 2.0
-  subsample: 0.8
-  colsample_bytree: 0.8
+  colsample_bytree: 0.6440613131985963
+  gamma: 0.47448062682421965
+  learning_rate: 0.1055633400893983
+  max_depth: 7
+  min_child_weight: 6
+  n_estimators: 190
   random_state: 42
+  reg_alpha: 0.5538326471886972
+  reg_lambda: 0.2239251831306163
+  scale_pos_weight: 2.136068784342291
+  subsample: 0.679490888668883

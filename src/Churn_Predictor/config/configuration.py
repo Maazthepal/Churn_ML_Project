@@ -1,5 +1,5 @@
 from src.Churn_Predictor.constants import *
-from src.Churn_Predictor.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelEvaluationConfig, ModelTrainerConfig
+from src.Churn_Predictor.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTunerConfig,ModelEvaluationConfig, ModelTrainerConfig
 from src.Churn_Predictor.utils.common import read_yaml, create_directories
 from pathlib import Path
 import os
@@ -57,6 +57,24 @@ class ConfigurationManager:
         )
         return data_transformation_config 
     
+    def get_model_tuner_config(self) -> ModelTunerConfig:
+        config = self.config.model_tuner
+        target_column = list(self.schema.TARGET_COLUMN.keys())[0] 
+        create_directories([config.root_dir])
+
+        model_tuner_config = ModelTunerConfig(
+            root_dir=config.root_dir,
+            train_data_path=config.train_data_path,
+            test_data_path=config.test_data_path,
+            target_column=target_column,
+            n_trails=config.n_trails,
+            study_name=config.study_name,
+            best_params_path=config.best_params_path,
+            mlflow_uri=os.getenv('MLFLOW_TRACKING_URI', 'file:./mlruns')  
+        )
+        print(model_tuner_config)
+        return model_tuner_config
+    
     def get_model_trainer_config(self) -> ModelTrainerConfig:
         model_trainer_config = self.config.model_trainer
         model_trainer_params = self.params.XGBBoost
@@ -75,7 +93,11 @@ class ConfigurationManager:
             scale_pos_weight=model_trainer_params.scale_pos_weight,
             subsample=model_trainer_params.subsample,
             colsample_bytree=model_trainer_params.colsample_bytree,
-            random_state=model_trainer_params.random_state
+            random_state=model_trainer_params.random_state,
+            reg_lambda=model_trainer_params.reg_lambda,
+            reg_alpha=model_trainer_params.reg_alpha,
+            gamma=model_trainer_params.gamma,
+            min_child_weight=model_trainer_params.min_child_weight
         )
         
         return model_trainer_config

@@ -15,6 +15,14 @@ data_transformation:
   root_dir: artifacts/data_transformation
   data_path: artifacts/data_ingestion/raw_data/WA_Fn-UseC_-Telco-Customer-Churn.csv
 
+model_tuner:
+  root_dir: artifacts/model_tuner
+  test_data_path: artifacts/data_transformation/test.csv
+  train_data_path: artifacts/data_transformation/train.csv
+  n_trails: 100
+  study_name: churn_prediction_optuna
+  best_params_path: artifacts/model_tuner/best_params.yaml
+
 model_trainer:
   root_dir: artifacts/model_trainer
   model_name: model.joblib
