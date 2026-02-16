@@ -1,20 +1,20 @@
-FROM python:3.13.5-slim
+# Use a slim Python image (smaller, faster)
+FROM python:3.12-slim
 
+# Set working directory
 WORKDIR /app
 
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-
+# Copy requirements first (better caching)
 COPY requirements.txt .
 
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install gunicorn
-
+# Copy the entire project
 COPY . .
 
+# Expose the port (Koyeb will use $PORT, but this documents it)
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+# Run Gunicorn with dynamic $PORT binding
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
