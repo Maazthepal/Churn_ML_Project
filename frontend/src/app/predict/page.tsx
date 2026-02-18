@@ -474,21 +474,38 @@ export default function PredictPage() {
                     </div>
                   </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="glow-btn w-full h-14 text-lg font-black bg-[#00FFB2] text-[#070714] hover:bg-[#00FFB2]/90 rounded-xl"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Analyzing with ML Model...
-                      </>
-                    ) : (
-                      '⚡ Predict Churn Risk'
+                  {/* Submit + Reset Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className={`glow-btn h-14 text-lg font-black bg-[#00FFB2] text-[#070714] hover:bg-[#00FFB2]/90 rounded-xl ${result ? 'flex-1' : 'w-full'}`}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Analyzing with ML Model...
+                        </>
+                      ) : (
+                        '⚡ Predict Churn Risk'
+                      )}
+                    </Button>
+
+                    {result && (
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          form.reset();
+                          setResult(null);
+                          setError(null);
+                        }}
+                        disabled={loading}
+                        className="fade-in flex-1 sm:flex-none sm:w-auto h-14 text-lg font-bold bg-transparent border-2 border-[#00FFB2]/30 text-[#00FFB2] hover:bg-[#00FFB2]/10 hover:border-[#00FFB2] rounded-xl transition-all"
+                      >
+                        ↻ New Prediction
+                      </Button>
                     )}
-                  </Button>
+                  </div>
 
                 </form>
               </Form>
