@@ -9,10 +9,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - temporarily allow all origins, lock down after frontend is deployed
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for now
+    allow_origins=["http://localhost:3000", "https://churn-ml-project-frontend-9ye74wjjv-maazs-projects-a170c8c4.vercel.app/", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -76,33 +76,41 @@ export default function PredictPage() {
   });
 
   async function onSubmit(values: FormValues) {
-    setLoading(true);
-    setError(null);
-    setResult(null);
+  setLoading(true);
+  setError(null);
+  setResult(null);
 
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${apiUrl}/predict`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(values as any),
-      });
+  try {
+    // Convert form values to URLSearchParams (FastAPI expects form-urlencoded)
+    const formData = new URLSearchParams();
+    Object.entries(values).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Server error: ${res.status} - ${errorText}`);
-      }
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const res = await fetch(`${apiUrl}/predict`, {
+      method: 'POST',                          // ← MUST be POST
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: formData,                          // ← correct body format
+    });
 
-      const data = await res.json();
-      setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to get prediction. Is the backend running?');
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Server responded with ${res.status}: ${errorText}`);
     }
+
+    const data = await res.json();
+    setResult(data);
+  } catch (err: any) {
+    console.error('Fetch error:', err);
+    setError(err.message || 'Failed to get prediction. Check console for details.');
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="min-h-screen bg-[#070714] text-[#E8E8F0] overflow-x-hidden relative">
@@ -216,7 +224,7 @@ export default function PredictPage() {
 
             <CardContent className="pt-8">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10" method="POST">
 
                   {/* Section 1: Demographics */}
                   <div className="space-y-6">
